@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
-const port = 3000
+// const port = 3000
+const port = 5000
+
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const config = require('./config/key')
@@ -25,6 +27,8 @@ mongoose.connect(config.mongoURI, {
 
 
 app.get('/', (req, res) => res.send('Hello World nodemon'))
+
+app.get('/api/hello', (req, res) => res.send('Hello World~!!!'))
 
 app.post('/api/users/register', (req,res) => {
     const user = new User(req.body)
@@ -55,18 +59,19 @@ app.post('/api/users/login', (req, res) => {
                 if(err) return res.status(400).send(err);
 
             // 토큰을 저장한다. 쿠키, 로컬스토리지 등
+            // 여기서는 쿠키에 저장한다.
                 res.cookie("x_auth", user.token)
                 .status(200)
                 .json({loginSuccess: true, userId: user._id})
             })
         })
     })
-    
-   
 })
+
+
 app.get('/api/users/auth', auth, (req, res) => {
     // 여기까지 middleware를 통과했다는 것은 authentication 이 true라는 뜻
-    res,status(200).json({
+    res.status(200).json({
         _id: req.user._id,
         isAdmin: req.user.role === 0 ? false : true,
         isAuth: true,
